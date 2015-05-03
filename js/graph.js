@@ -174,54 +174,52 @@ var graph = function() {
         var painted_nodes = "";
 
         //Painting nodes
+        var paintNode = function(node){
+            node.color = '#'+Math.floor(Math.random()*16777215).toString(16);
+            var nodeMaterial = new THREE.MeshBasicMaterial( { color:  node.color} );
+            var sphere = new THREE.Mesh(new THREE.SphereGeometry(20, 8, 8), nodeMaterial);
+
+            x = Math.floor((Math.random()*500)+1)-500;
+            y = Math.floor((Math.random()*500)+1)-400;
+            z = Math.floor((Math.random()*500)+1);
+            sphere.overdraw = true;
+            sphere.position.set( x, y, z );
+            scene.add(sphere);
+
+            //Making sure the node remember it's position
+            node.x = x;
+            node.y = y;
+            node.z = z;
+
+            node.object = sphere;
+
+            var text3d = new THREE.TextGeometry(
+                node.id.toString(),
+                {
+                        size: 50,
+                        height: 20,
+                        curveSegments: 2,
+                        font: "helvetiker"
+                }
+            );
+            text3d.computeBoundingBox();
+            var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
+
+            var textMaterial = new THREE.MeshBasicMaterial( { color: node.color } );
+            text = new THREE.Mesh( text3d, textMaterial );
+
+            text.position.x = node.x + 10;
+            text.position.y = node.y + 10;
+            text.position.z = node.z;
+
+            text.rotation.x = 0;
+            text.rotation.y = Math.PI * 2;
+
+            group = new THREE.Object3D();
+            group.add( text );
+            scene.add( group );
+        };
         this.nodes.forEach(function(node) {
-            var paintNode = function(node){
-
-                node.color = '#'+Math.floor(Math.random()*16777215).toString(16);
-                var nodeMaterial = new THREE.MeshBasicMaterial( { color:  node.color} );
-                var sphere = new THREE.Mesh(new THREE.SphereGeometry(20, 8, 8), nodeMaterial);
-
-                x = Math.floor((Math.random()*500)+1)-500;
-                y = Math.floor((Math.random()*500)+1)-400;
-                z = Math.floor((Math.random()*500)+1);
-                sphere.overdraw = true;
-                sphere.position.set( x, y, z );
-                scene.add(sphere);
-
-                //Making sure the node remember it's position
-                node.x = x;
-                node.y = y;
-                node.z = z;
-
-                node.object = sphere;
-
-                var text3d = new THREE.TextGeometry(
-                    node.id.toString(),
-                    {
-                            size: 50,
-                            height: 20,
-                            curveSegments: 2,
-                            font: "helvetiker"
-                    }
-                );
-                text3d.computeBoundingBox();
-                var centerOffset = -0.5 * ( text3d.boundingBox.max.x - text3d.boundingBox.min.x );
-
-                var textMaterial = new THREE.MeshBasicMaterial( { color: node.color } );
-                text = new THREE.Mesh( text3d, textMaterial );
-
-                text.position.x = node.x + 10;
-                text.position.y = node.y + 10;
-                text.position.z = node.z;
-
-                text.rotation.x = 0;
-                text.rotation.y = Math.PI * 2;
-
-                group = new THREE.Object3D();
-                group.add( text );
-                scene.add( group );
-            };
-
             if(painted_nodes.indexOf(node.id) == -1){
                 paintNode(node);
                 painted_nodes += node.id;
